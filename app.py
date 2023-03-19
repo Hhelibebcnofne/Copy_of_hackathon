@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder = './static/img')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -10,7 +11,9 @@ def index():
 def result():
     if request.method == 'POST':
         test = request.form.get('test')
-        return render_template('result.html', test = test)
+        file = request.files['img']
+        file.save(os.path.join('./static/img',file.filename))
+        return render_template('result.html', test = file.filename)
     else:
         return render_template('index.html')
 
