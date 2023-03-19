@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, Blueprint
+from aws_process import aws_process
 import os
 
 app = Flask(__name__, static_folder = './static/img')
+app.register_blueprint(aws_process)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
