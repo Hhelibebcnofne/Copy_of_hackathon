@@ -28,7 +28,7 @@ def result():
         # file = request.files['img']
         # file.save(os.path.join('./static/img',file.filename))
 
-        openai.api_key = os.environ['OPEN_AI_KEY']
+        openai.api_key = "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"
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
