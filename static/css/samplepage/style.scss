@@ -1,0 +1,12 @@
+@use 'parts/appear';
+@use 'parts/button';
+@use 'parts/hero-slider';
+@use 'parts/text-animation';
+@use 'parts/image-slide';
+@use 'parts/mobile-menu';
+
+@use "pages/home";
+
+h1 {
+    color: blue;
+}

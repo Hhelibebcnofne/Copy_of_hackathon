@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import openai
 
-app = Flask(__name__, static_folder = './static/img')
+app = Flask(__name__, static_folder = './static')
 app.register_blueprint(aws_process)
 load_dotenv()
 
@@ -28,7 +28,7 @@ def result():
         # file = request.files['img']
         # file.save(os.path.join('./static/img',file.filename))
 
-        openai.api_key = "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"
+        openai.api_key = os.environ['OPEN_AI_KEY']
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -43,6 +43,20 @@ def result():
         # return render_template('result.html')
     else:
         return render_template('index.html')
+    
+@app.route('/sample')
+def sample():
+    return render_template('sample.html')
+
+# @aws_process.route("/test", methods=['GET', 'POST'])
+# def test():
+#     if request.method == 'POST':
+#         test = request.form.get('test')
+#         file = request.files['img']
+#         file.save(os.path.join('./static/img',file.filename))
+#         return render_template('test.html', test = file.filename)
+#     else:
+#         return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
