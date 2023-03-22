@@ -239,7 +239,7 @@
 
 .hero {
   overflow: hidden;
-  padding-top: 30px;
+  padding-top: 100px;
 }
 .hero__title {
   position: absolute;
@@ -767,7 +767,7 @@ main {
   top: 0;
   left: 0;
   width: 100%;
-  height: 30px;
+  height: 100px;
   background: transparent;
   display: flex;
   align-items: center;
@@ -1091,6 +1091,7 @@ main {
   background-image: url(../images/facebook.svg);
 }
 
-h1 {
-  color: blue;
+a {
+  text-decoration: none;
+  color: black;
 }/*# sourceMappingURL=style.css.map */

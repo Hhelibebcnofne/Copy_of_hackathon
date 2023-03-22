@@ -1,22 +1,44 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h1>トップページ</h1>
-<form action="/result", method="POST", enctype="multipart/form-data">
-    <input type="text" name="test">
-    <input type="file" name="img">
-    <input type="submit" value="検索">
-</form>
-
-
-<form action="/test", method="POST", enctype="multipart/form-data">
-    <p>吉本くんの編集の方</p>
-    <input type="text" name="test">
-    <input type="file" name="img">
-    <input type="submit" value="投稿">
-</form>
-
-<a href="/test">テストページ</a>
-<br>
-<a href="/sample">サンプルページへ</a>
+<div id="content">
+    <div class="hero">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="hero__title">Want To Post More?</div>
+                    <img src="static/img/insta.jpg" alt="" />
+                </div>
+                <div class="swiper-slide">
+                    <div class="hero__title">Want Herarts?</div>
+                    <img src="static/img/heart.jpg" alt="" />
+                </div>
+                <div class="swiper-slide">
+                    <div class="hero__title">Zero? Are You Kidding?</div>
+                    <img src="static/img/zero.jpg" alt="" />
+                </div>
+            </div>
+            <div class="hero__footer">
+                <img class="hero__downarrow" src="static/img/arrow.svg" />
+                <span class="hero__scrolltext">scroll</span>
+            </div>
+        </div>
+    </div>
+    <form action="/result" , method="POST" , enctype="multipart/form-data">
+        <input type="text" name="test">
+        <input type="file" name="img">
+        <input type="submit" value="検索">
+    </form>
+    
+    
+    <form action="/test" , method="POST" , enctype="multipart/form-data">
+        <p>吉本くんの編集の方</p>
+        <input type="text" name="test">
+        <input type="file" name="img">
+        <input type="submit" value="投稿">
+    </form>
+    
+    <a href="/test">テストページ</a>
+    <br>
+</div>
 {% endblock %}

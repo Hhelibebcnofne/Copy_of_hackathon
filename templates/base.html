@@ -1,14 +1,86 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}"> -->
+    <meta name="description" content="Instagramの投稿文を自動作成してくれるAIが誕生!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kameron:wght@400;700&family=Noto+Sans+JP:wght@500&display=swap"
+        rel="stylesheet">
     <title>納豆</title>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/vendors/pace.js') }}"></script>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/loader.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/vendors/css-reset.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/vendors/swiper-bundle.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/vendors/gsap.min.js') }}"
+        defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/vendors/swiper-bundle.min.js') }}"
+        defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/libs/hero-slider.js') }}"
+        defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/vendors/scroll-polyfill.js') }}"
+        defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/libs/scroll.js') }}" defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/libs/mobile-menu.js') }}"
+        defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/libs/text-animation.js') }}"
+        defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+
+
     {% block head %}{% endblock %}
 </head>
+
+
 <body>
-    {% block body %}{% endblock %}
+    <div id="global-container">
+        <div id="container">
+            <div class="mobile-menu__cover"></div>
+            <div class="nav-trigger"></div>
+            <header class="header">
+                <div class="header__inner appear up">
+                    <div class="logo item">
+                        <a href="/"><span class="logo__stay">Insta Natto</span></a>
+                    </div>
+                
+                    <nav class="header__nav">
+                        <ul class="header__ul">
+                            <li class="header__li item"><a href="/service">サービス内容</a></li>
+                            <li class="header__li item"><a class="btn filled" href="/">使ってみる！</a></li>
+                        </ul>
+                    </nav>
+                    <button class="mobile-menu__btn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </header>
+            {% block body %}
+            {% endblock %}
+        </div>
+        <nav class="mobile-menu">
+            <ul class="mobile-menu__main">
+                <li class="mobile-menu__item">
+                    <a class="mobile-menu__link" href="/service">
+                        <span class="main-title">Our Service</span>
+                        <span class="sub-title">サービス内容</span>
+                    </a>
+                    <a class="mobile-menu__link" href="/">
+                        <span class="main-title">Get Started</span>
+                        <span class="sub-title">使ってみる!</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </body>
+
 </html>

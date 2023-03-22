@@ -12,6 +12,10 @@ load_dotenv()
 def index():
     return render_template('index.html')
 
+@app.route('/service')
+def service():
+    return render_template('service.html')
+
 @app.route('/result', methods=['GET','POST'])
 def result():
     if request.method == 'POST':
@@ -44,9 +48,7 @@ def result():
     else:
         return render_template('index.html')
     
-@app.route('/sample')
-def sample():
-    return render_template('sample.html')
+
 
 # @aws_process.route("/test", methods=['GET', 'POST'])
 # def test():

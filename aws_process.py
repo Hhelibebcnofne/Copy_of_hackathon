@@ -17,6 +17,9 @@ def test():
         test = request.form.get('test')
         file = request.files['img']
         file.save(os.path.join('./static/img',file.filename))
+        file_path = "./static/img/" + file.filename
+        labels = get_label(file_path)
+        print(labels)
         return render_template('test.html', test = file.filename)
     else:
         return render_template('index.html')
@@ -35,6 +38,6 @@ def get_label(img_path):
         )
     return response.json()
 
-img_path = './static/img/flask.png'
-print(get_label(img_path))
-print(type(get_label(img_path)))
+# img_path = './static/img/flask.png'
+# print(get_label(img_path))
+# print(type(get_label(img_path)))
