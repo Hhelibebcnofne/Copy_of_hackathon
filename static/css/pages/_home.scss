@@ -19,9 +19,9 @@ main {
 }
 
 .header {
-  position: fixed;
-  top: 0;
-  left: 0;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
   width: 100%;
   height: $navHeight;
   background: transparent;
@@ -90,7 +90,7 @@ main {
     @extend .pb-lg;
 }
 
-.travel {
+.service {
   @extend .content-width;
   @extend .mb-lg;
 
@@ -113,11 +113,11 @@ main {
   &__img {
     @extend .mb-sm;
     height: 300px;
-    transition: box-shadow 0.5s ease 1.6s;
+    // transition: box-shadow 0.5s ease 1.6s;
 
-    &.inview {
-      box-shadow: inset 0 0 30px $cBlack;
-    }
+    // &.inview {
+    //   box-shadow: inset 0 0 30px $cBlack;
+    // }
 
     @include mq(md) {
       flex-basis: 47%;
@@ -147,7 +147,7 @@ main {
     }
 
     &.inview {
-      & .travel__title::before {
+      & .service__title::before {
         @include animation($name: scaleX, $duration: 0.3s, $delay: 1.5s);
       }
     }
