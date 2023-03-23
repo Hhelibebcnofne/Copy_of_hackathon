@@ -28,9 +28,6 @@ def result():
         else:
             question += "の単語を繋げていけてる感じでインスタに投稿する文章を考えて"
         print(question)
-        
-        # file = request.files['img']
-        # file.save(os.path.join('./static/img',file.filename))
 
         openai.api_key = os.environ['OPEN_AI_KEY']
 
@@ -53,10 +50,8 @@ def images():
     if request.method == 'POST':
         files = request.files.getlist('images')
         for file in files:
-            print(file)
-        # print(files)
+            print(file.filename)
         print("-------------------------")
-        # print(files.filename)
         return render_template('index.html')
 
 # @aws_process.route("/test", methods=['GET', 'POST'])

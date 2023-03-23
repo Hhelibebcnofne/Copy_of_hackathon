@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, Blueprint
 import os
+import openai
 
 # 一旦使えるライブラリ適当にインポートしてるけど使えなそうだったらなんとかする。
 # from urllib import request as req, parse
@@ -14,15 +15,40 @@ url_dic = {'apiId' : '27tar9360c', 'region' : 'ap-northeast-1', 'stage' : 'prod'
 
 aws_process = Blueprint('aws_process', __name__)
 
+THRESHOLD = 85
+
 @aws_process.route("/test", methods=['GET', 'POST'])
 def test():
     if request.method == 'POST':
-        test = request.form.get('test')
-        file = request.files['img']
-        file.save(os.path.join('./static/img',file.filename))
-        file_path = "./static/img/" + file.filename
-        ins = labels('./static/img/flask.png', 80, url_dic)
-        return render_template('test.html', test = file.filename)
+        #ラベルをとってくる処理
+        files = request.files.getlist('images')
+        get_labels = []
+        for file in files:
+            file.save(os.path.join('./static/img',file.filename))
+            file_path = "./static/img/" + file.filename
+            ins = labels(file_path, THRESHOLD, url_dic)
+            for label in ins.data:
+                if label not in get_labels:
+                    get_labels.append(label)
+        
+        #文章をChatGPTに作成してもらう処理
+        question = ""
+        for label in get_labels:
+            question += label + "、"
+        else:
+            question += "の単語から必要な単語を使って、かっこいいインスタに投稿する文章を考えて"
+        openai.api_key = os.environ['OPEN_AI_KEY']
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                # {"role": "system", "content": "間違った解答をして下さい"}, #※1後述
+                {"role": "user", "content": question}, #※1後述
+            ]
+        )
+        ans = response["choices"][0]["message"]["content"]
+        
+        return render_template('test.html', test = ans)
     else:
         return render_template('index.html')
 
@@ -49,7 +75,6 @@ class labels():
         with open(self.img_path, mode='rb') as f:
             img = f.read()
         img = base64.b64encode(img).decode()
-        # print(img)
         response = requests.post(
             url = self.url,
             data = json.dumps({'image_base64str' : img, 'threshold' : self.threshold}),
@@ -66,5 +91,3 @@ class labels():
             # print(i['Confidence'])
             d.append(i['Name'])
         return d
-
-print(ins.data)
