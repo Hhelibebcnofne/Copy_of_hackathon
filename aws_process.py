@@ -9,6 +9,7 @@ import base64
 import json
 # ↓バックエンドだしどうでもいいんだろうけど、APIキーなんで環境変数とかにできるとセキュリティ的に良さげ？
 key = 'yTXH7Sw2oy2SoDL08yf004W0712Ytrlj1WLEvUar'
+OPEN_AI_KEY = "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"
 
 # リクエスト用URL生成に使うデータ。地域とかその辺。
 url_dic = {'apiId' : '27tar9360c', 'region' : 'ap-northeast-1', 'stage' : 'prod', 'resource' : 'detect'}
@@ -37,7 +38,7 @@ def test():
             question += label + "、"
         else:
             question += "の単語から必要な単語を使って、かっこいいインスタに投稿する文章を考えて"
-        openai.api_key = os.environ['OPEN_AI_KEY']
+        openai.api_key = OPEN_AI_KEY
         
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
