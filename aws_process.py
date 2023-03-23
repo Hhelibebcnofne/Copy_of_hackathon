@@ -27,7 +27,11 @@ def test():
         for file in files:
             file.save(os.path.join('./static/img',file.filename))
             file_path = "./static/img/" + file.filename
-            ins = labels(file_path, THRESHOLD, url_dic)
+            try:
+                ins = labels(file_path, THRESHOLD, url_dic)
+            except:
+                error_msg = "画像からラベルを取り出せませんでした"
+                return render_template('index.html', error = error_msg)
             for label in ins.data:
                 if label not in get_labels:
                     get_labels.append(label)
