@@ -19,9 +19,8 @@ def test():
         file.save(os.path.join('./static/img',file.filename))
         file_path = "./static/img/" + file.filename
         labels = get_label(file_path)
-        li = [file.filename,labels]
         print(labels)
-        return render_template('test.html', test = li)
+        return render_template('test.html', test = file.filename)
     else:
         return render_template('index.html')
 

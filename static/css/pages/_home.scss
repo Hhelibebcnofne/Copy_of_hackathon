@@ -90,6 +90,22 @@ main {
     @extend .pb-lg;
 }
 
+.form_select {
+  // background-color: red;
+  width: 80%;
+  text-align: center;
+  margin: 0 auto;
+
+  .options {
+    margin-top: 50px;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
 .service {
   @extend .content-width;
   @extend .mb-lg;
@@ -190,219 +206,8 @@ main {
   }
 }
 
-.houses {
-  @extend .content-width;
-  @extend .mb-lg;
-
-  &__inner {
-    @extend .flex;
-  }
-
-  &__title {
-    @extend .mb-sm;
-    @extend .font-lr;
-  }
-
-  &__item {
-    @include mq(md) {
-      flex-basis: 50%;
-    }
-    @include mq(lg) {
-      margin-bottom: 60px;
-    }
-  }
-
-  &__btn {
-    text-align: center;
-    flex-basis: 100%;
-  }
-}
-
-.popular {
-  &__header {
-    @extend .content-width;
-  }
-  &__inner {
-    position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 90%;
-      width: 100%;
-      background: $cBgGray;
-    }
-  }
-
-  &__container {
-    position: relative;
-    z-index: 2;
-    @extend .content-width;
-    @extend .flex;
-    justify-content: space-between;
-  }
-
-  &__item {
-    @include mq(md) {
-      flex-basis: 47%;
-    }
-    @include mq(lg) {
-      flex-basis: 25%;
-    }
-    @include mq(xl) {
-      flex-basis: 23%;
-    }
-  }
-
-  &__title {
-    @extend .mb-sm;
-    @extend .font-md;
-  }
-
-  &__img {
-    height: 150px;
-    margin-bottom: 5px;
-
-    @include mq(lg) {
-      height: 335px;
-    }
-
-    & > img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-
-  &__btn {
-    text-align: center;
-    flex-basis: 100%;
-    @extend .mb-lg;
-  }
-}
-
 .footer {
   padding: 60px 0;
+  text-align: center;
   @extend .content-width;
-
-  &__nav {
-    @extend .flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-  }
-
-  &__ul {
-    @extend .flex;
-    list-style: none;
-    padding: 0;
-  }
-
-  &__li {
-    margin: 10px;
-
-    @include mq(md) {
-      margin-left: 0;
-      margin-right: 30px;
-    }
-
-    & > a {
-      color: $cSubTitle;
-      text-decoration: none;
-    }
-  }
-
-  & > .logo {
-    font-size: 38px;
-    justify-content: center;
-
-    @include mq(md) {
-      justify-content: flex-start;
-    }
-  }
-}
-
-.logo {
-  font-size: 42px;
-  display: flex;
-
-  &__img {
-    width: 0.7em;
-  }
-
-  &__world {
-    color: $cWineRed;
-  }
-}
-
-.side {
-  display: none;
-  position: fixed;
-  top: 70%;
-  transform: translateY(-50%);
-  transition: all 0.3s ease;
-
-  @include mq(xl) {
-    display: block;
-  }
-
-  & .tween-animate-title {
-    color: $cBlack;
-    text-decoration: none !important;
-    margin: 0 40px;
-    vertical-align: middle;
-    letter-spacing: 2px;
-  }
-
-  &.left {
-    left: -50px;
-
-    &.inview {
-      left: 50px;
-    }
-
-    & .side__inner {
-      transform-origin: top left;
-      transform: rotate(-90deg);
-    }
-  }
-
-  &.right {
-    right: -50px;
-
-    &.inview {
-      right: 50px;
-    }
-
-    & .side__inner {
-      transform-origin: top right;
-      transform: rotate(90deg);
-    }
-  }
-}
-
-.icon {
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: -20px;
-        width: 1em;
-        height: 1em;
-        transform: translateY(-50%);
-        background-position: center;
-        background-repeat: none;
-        background-size: contain;
-    }
-
-    &.twitter::before {
-        background-image: url(../images/twitter.svg);
-    }
-    &.fb::before {
-        background-image: url(../images/facebook.svg);
-    }
 }

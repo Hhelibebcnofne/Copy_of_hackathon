@@ -48,7 +48,16 @@ def result():
     else:
         return render_template('index.html')
     
-
+@app.route('/images', methods=['GET','POST'])
+def images():
+    if request.method == 'POST':
+        files = request.files.getlist('images')
+        for file in files:
+            print(file)
+        # print(files)
+        print("-------------------------")
+        # print(files.filename)
+        return render_template('index.html')
 
 # @aws_process.route("/test", methods=['GET', 'POST'])
 # def test():
