@@ -16,7 +16,7 @@ url_dic = {'apiId' : '27tar9360c', 'region' : 'ap-northeast-1', 'stage' : 'prod'
 
 aws_process = Blueprint('aws_process', __name__)
 
-THRESHOLD = 85
+THRESHOLD = 0
 
 @aws_process.route("/test", methods=['GET', 'POST'])
 def test():
