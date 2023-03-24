@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h1>これはテストページです</h1>
-<!-- <p>{{test[0]}}</p> -->
-<p>{{test}}</p>
-<!-- <p>{{test[0]}}</p> -->
-<!-- <img src="./static/img/{{test[0]}}"> -->
-<a href="/">トップページへ</a>
+<div class="result">
+    <h1>これはテストページです</h1>
+    <p>{{test}}</p>
+    <div class="btn_link">
+        <a class="btn filled" href="/">Try Again!</a>
+        <a class="btn filled" href="#">Post!</a>
+    </div>
+</div>
 {% endblock %}

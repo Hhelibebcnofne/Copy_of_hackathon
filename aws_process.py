@@ -55,7 +55,14 @@ def test():
         
         return render_template('test.html', test = ans)
     else:
-        return render_template('index.html')
+        a = """
+        ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
+        ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
+        ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
+        ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
+        ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
+        """
+        return render_template('test.html', test = a)
 
 # 正直クラスにする必要性感じんけどクラス作る勉強のためにやりました。ゲッターとかセッターとか面倒くさいし知らん。
 class labels():

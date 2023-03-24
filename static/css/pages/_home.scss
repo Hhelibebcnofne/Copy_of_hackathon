@@ -18,6 +18,11 @@ main {
     z-index: -1;
 }
 
+a {
+  text-decoration: none;
+  color: $cBlack;
+}
+
 .header {
   // position: fixed;
   // top: 0;
@@ -98,12 +103,34 @@ main {
 
   .options {
     margin-top: 50px;
+    // background-color: red;
   }
 }
 
-a {
-  text-decoration: none;
-  color: black;
+.result {
+  width: 70%;
+  margin: 0 auto;
+  margin-top: 100px;
+  h1 {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  p {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .btn_link {
+    display: flex;
+    margin-top: 50px;
+  }
+
+  a {
+    // margin-right: 1px;
+    text-align: center;
+  }
 }
 
 .service {

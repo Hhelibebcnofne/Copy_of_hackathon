@@ -4,7 +4,7 @@
   background-color: white;
   border: 1px solid black;
   font-weight: 600;
-  padding: 10px 40px;
+  padding: 5px 20px;
   margin: 10px auto;
   cursor: pointer;
   transition: all 0.3s;
@@ -24,26 +24,6 @@
 .btn.filled:hover {
   background-color: white;
   color: black;
-  box-shadow: none;
-}
-.btn.letter-spacing:hover {
-  background-color: black;
-  letter-spacing: 3px;
-  color: white;
-}
-.btn.shadow {
-  box-shadow: none;
-}
-.btn.shadow:hover {
-  transform: translate(-2.5px, -2.5px);
-  box-shadow: 5px 5px 0 0 black;
-}
-.btn.solid {
-  box-shadow: 2px 2px 0 0 black;
-  border-radius: 7px;
-}
-.btn.solid:hover {
-  transform: translate(2px, 2px);
   box-shadow: none;
 }
 .btn.slide-bg {
@@ -243,10 +223,6 @@
   top: 60px;
   width: 300px;
 }
-.mobile-menu .logo {
-  padding: 0 40px;
-  font-size: 38px;
-}
 .mobile-menu__btn {
   background-color: unset;
   border: none;
@@ -298,7 +274,6 @@
 .mobile-menu__link {
   display: block;
   margin-top: 30px;
-  color: black;
   text-decoration: none !important;
 }
 
@@ -397,10 +372,6 @@ img {
   }
 }
 
-.purple {
-  color: #904669;
-}
-
 .font-sm, .sub-title {
   font-size: 14px;
 }
@@ -462,6 +433,11 @@ img {
 main {
   position: relative;
   z-index: -1;
+}
+
+a {
+  text-decoration: none;
+  color: black;
 }
 
 .header {
@@ -531,9 +507,26 @@ main {
   margin-top: 50px;
 }
 
-a {
-  text-decoration: none;
-  color: black;
+.result {
+  width: 70%;
+  margin: 0 auto;
+  margin-top: 100px;
+}
+.result h1 {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.result p {
+  width: 50%;
+  margin: 0 auto;
+  text-align: center;
+}
+.result .btn_link {
+  display: flex;
+  margin-top: 50px;
+}
+.result a {
+  text-align: center;
 }
 
 .service__inner {
