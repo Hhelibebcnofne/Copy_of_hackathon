@@ -33,9 +33,8 @@ def test():
         for file in files:
             file.save(os.path.join('./static/img/keep_img',file.filename))
             file_path = "./static/img/keep_img/" + file.filename
-            print(file_path)
             try:
-                ins = labels("./static/img/keep_img/football.jpeg", THRESHOLD, url_dic)
+                ins = labels(file_path, THRESHOLD, url_dic)
             except:
                 error_li = []
                 error_li.append("Error!")
