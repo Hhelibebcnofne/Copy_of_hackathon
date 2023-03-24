@@ -9,11 +9,7 @@ import json
 
 #画像圧縮に使用
 from PIL import Image
-import cv2
-import numpy as np
-
 from io import BytesIO
-import matplotlib.pyplot as plt
 
 
 # ↓バックエンドだしどうでもいいんだろうけど、APIキーなんで環境変数とかにできるとセキュリティ的に良さげ？
@@ -34,9 +30,64 @@ def test():
     else:
         return render_template('index.html')
 
+# 高さと幅は小さくしたほうが、この関数の処理速度もAWSからの応答も目に見えて速くなる。
+def resize_img(path:str, max_width:int, max_height:int) -> bytes:
+    """
+    画像サイズを引数に合わせて比率を保ったまま縮小し、
+    Max_sizeより大きな画像を
+    メモリ上で圧縮する関数。
+    限界まで劣化させても5MBを超える場合は
+    許容サイズを20%ずつ縮めることで対応。
+    計算量でかいと思うので、もっと効率化できそうです。
+    探索アルゴリズムになるのかな。
+    """
+    # この関数を通しても5MBより大きな場合が起きないようにする
+    Max_size = 5000 # データ容量の最大値。KBで指定。今回はAWSの仕様に合わせて5MBで固定。
+    img = Image.open(path).convert('RGB')
+    new_img = img.copy()
+    max_length = 0
+    while True:
+        if new_img.size[1] > max_height or new_img.size[0] > max_width:
+            # 一周目に画像が指定したサイズより大きい場合
+            max_length = max_height if new_img.size[1] > new_img.size[0] else max_width
+        elif max_length == 0:
+            # 画像サイズの縦と横の大きな方を代入
+            max_length = new_img.size[1] if new_img.size[1] > new_img.size[0] else new_img.size[0]
+        else:
+            # 1周おきに画像最大サイズの許容量が20%縮む。
+            max_length *= 0.8
+        new_img = img.copy() #劣化画像を更に劣化させることがないように一度画像を初期化
+        new_img.thumbnail((max_length, max_length))
+        print('max_length:' + str(max_length) + ' height:' + str(new_img.size[1]) + ' width:' + str(new_img.size[0]))
+        new_img_size = os.path.getsize(path) / 1000
+        # 画質を調整
+        for i in range(100, -1, -5): 
+            # PILならBytesIOに保存できるので、ディスクに保存せずに処理できた。
+            buffer = BytesIO()
+            new_img.save(buffer, format='JPEG', quality=i)
+            new_img_size = len(buffer.getvalue()) / 1000
+            if new_img_size > Max_size and i > 0:
+                print(str(new_img_size) + 'KB '+ 'quality=' + str(i))
+            elif new_img_size <= Max_size:
+                print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'quality=' + str(i))
+                return buffer.getvalue()
+                
+
+
 # 正直クラスにする必要性感じんけどクラス作る勉強のためにやりました。
 class labels():
+    """
+    ラベル取得関係のインスタンス。
+    画像縮小済みの画像をAWSにリクエストで送信。
+    結果として翻訳済みのラベルが返ってくる。
+    翻訳処理とAmazon Rekognitionの処理はAPI GatewayとAWS lambdaを経由。
+    流れはこうなってる……はず。
+    get_label() -> API Gateway -> AWS lambda -> Amazon Rekognition -> AWS lambda -> Amazon Translate -> AWS lambda -> API Gateway -> get_label()
+    """
     def __init__(self, img_path:str, threshold:int, urldata:dict) -> None:
+        """
+        コンストラクタ
+        """
         # 画像のファイルパス。
         self.img_path = img_path
         
@@ -46,16 +97,19 @@ class labels():
         # リクエスト送信用url。呼び出しのたびに計算するの処理速度的にもったいない気がするけど分かんない。
         self.url ='https://' + urldata['apiId'] + '.execute-api.' + urldata['region'] + '.amazonaws.com/' + urldata['stage'] + '/' + urldata['resource']
 
-        # APIからのレスポンス。
+        # APIからのレスポンス。これ変数に入れる必要ない気もする。
         self.response = self.get_label()
 
-        # 閾値で選び取ったラベル名の配列。
+        # 閾値で選び取ったラベル名の配列。これも変数に入れる必要ない気もする。
         self.data = self.data_cleaner()
 
-    # リクエスト送信用関数。
     def get_label(self) -> dict:
-        with open(self.img_path, mode='rb') as f:
-            img = f.read()
+        """
+        リクエスト送信用関数。
+        """
+        # 画像をリサイズして取得
+        img = resize_img(self.img_path, 5000, 5000)
+        # base64文字列に変換
         img = base64.b64encode(img).decode()
         # print(img)
         response = requests.post(
@@ -67,6 +121,9 @@ class labels():
 
     # ラベル名を取り出してリストとして返す関数。
     def data_cleaner(self) -> list:
+        """
+        ラベル名を取り出してリストとして返す関数。
+        """
         li = []
         for i in self.response['payloads']['Labels']:
             # テスト用
@@ -74,9 +131,12 @@ class labels():
             # print(i['Confidence'])
             li.append(i['Name'])
         return li
-    
+
+ins = labels('./static/img/1654259447208.png', 60, url_dic)
+print(ins.data)
+
 # -----------ここからテスト用コード-----------
-# 使うところ以外コメントアウトして使用してた。無視してください。
+# 使うところ以外コメントアウトして使用してた。やったこと思い出すために使ってます。無視してください。
 # ins = labels('./static/img/1654259447208.png', 60, url_dic)
 # print(ins.data)
 
@@ -131,58 +191,13 @@ class labels():
 # img = base64.b64encode(img).decode()
 # print(len(img))
 # print(img)
-# -----------ここまでテスト用コード-----------
-
-# リサイズしたい画像のパス
-path = './static/img/1654259447208.png'
-def resize_img(path:str, max_height:int, max_width:int) -> object:
-    Max_size = 5000 # データ容量の最大値。KBで指定。今回は5MBで固定。
-    img = Image.open(path).convert('RGB')
-    new_img = img.copy()
-    new_img.thumbnail((max_height, max_width))
-    new_img_size = os.path.getsize(path) / 1000
-    # 画質を調整
-    for i in range(100, -1, -5): 
-        # PILならBytesIOに保存できるので、ディスクに保存せずに処理できた。
-        buffer = BytesIO()
-        new_img.save(buffer, format='JPEG', quality=i)
-        new_img_size = len(buffer.getvalue()) / 1000
-        if new_img_size > Max_size and i > 0:
-            print(str(new_img_size) + 'KB '+ 'quality=' + str(i))
-        else:
-            print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'quality=' + str(i))
-            break
-    # if img
-    return buffer
-    # PNGをJPEGに変換したくない場合、以下のコードを使う。PNGとJPEG以外非対応。
-    # RGBAに対応出来るようになるものの、データ量が大きくなりやすいので、使用は非推奨。
-    # print(img.format)
-    # if img.format == 'JPEG':
-    #     for i in range(100, -1, -5): 
-    #         buffer = BytesIO()
-    #         new_img.save(buffer, format='JPEG', quality=i)
-    #         new_img_size = len(buffer.getvalue()) / 1000
-    #         if new_img_size > Max_size and i > 0:
-    #             print(str(new_img_size) + 'KB '+ 'quality=' + str(i))
-    #         else:
-    #             print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'quality=' + str(i))
-    #             break
-    # elif img.format == 'PNG':
-    #     for i in range(10): 
-    #         buffer = BytesIO()
-    #         new_img.save(buffer, format='PNG', compress_level=i)
-    #         new_img_size = len(buffer.getvalue()) / 1000
-    #         if new_img_size > Max_size and i < 10:
-    #             print(str(new_img_size) + 'KB '+ 'compress_level=' + str(i))
-    #         else:
-    #             print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'compress_level=' + str(i))
-    #             break
-
-print(type(resize_img(path, 2000, 2000)))
-# 以下テスト用
+# 
+# path = './static/img/1654259447208.png'
+# print(type(resize_img(path, 2000, 2000)))
 # response = requests.post(
 #             url = 'https://' + url_dic['apiId'] + '.execute-api.' + url_dic['region'] + '.amazonaws.com/' + url_dic['stage'] + '/' + url_dic['resource'],
 #             data = json.dumps({'image_base64str' : base64.b64encode(resize_img(path, 2000, 2000).getvalue()).decode(), 'threshold' : 50}),
 #             headers = {'Content-Type' : 'application/json', 'x-api-key' : key}
 #             )
 # print(response.json()['payloads']['Labels'])
+# -----------ここまでテスト用コード-----------
