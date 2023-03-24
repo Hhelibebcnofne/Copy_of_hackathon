@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body %}
+{% for err in errors %}
+<h1 class="error">{{err}}</h1>
+{% endfor %}
 <div id="content">
     <div class="hero">
         <div class="swiper">
@@ -40,8 +43,6 @@
             </form>
 
             <p>---------------------------------------------------------------</p> -->
-
-            <h1>{{error}}</h1>
 
             <form action="/test" method="POST" enctype="multipart/form-data">
                 <label>Images</label>

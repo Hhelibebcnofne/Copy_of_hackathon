@@ -553,6 +553,13 @@ a {
   border-style: solid;
 }
 
+.error {
+  text-align: center;
+  font-size: 28px;
+  opacity: 0.8;
+  margin: 15px 30px;
+}
+
 .result {
   width: 70%;
   margin: 0 auto;
