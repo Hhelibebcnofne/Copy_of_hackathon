@@ -7,11 +7,11 @@
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
                     <div class="hero__title">Want To Post More?</div>
-                    <img src="static/img/insta.jpg" alt="" />
+                    <img src="static/img/insta.jpg" alt="" loading="lazy"/>
                 </div>
                 <div class="swiper-slide">
                     <div class="hero__title">Want Herarts?</div>
-                    <img src="static/img/heart.jpg" alt="" />
+                    <img src="static/img/heart.jpg" alt="" loading="lazy"/>
                 </div>
                 <div class="swiper-slide">
                     <div class="hero__title">Zero? Are You Kidding?</div>
@@ -44,14 +44,20 @@
             <h1>{{error}}</h1>
 
             <form action="/test" method="POST" enctype="multipart/form-data">
-                <label>Images</label><br>
-                <input type="file" name="images" required multiple="multiple"><br><br>
-                <label>People※複数いる場合は"、"区切りで記入してください</label><br>
-                <input type="text" name="people"><br>
-                <label>Place</label><br>
-                <input type="text" name="place"><br><br>
-                <input type="submit" value="文章作成">
+                <label>Images</label>
+                <input type="file" name="images" required multiple="multiple" style="margin-bottom: 30px;">
+                <div class="cp_iptxt">
+                    <label>People<br>※複数いる場合は"、"区切りで記入してください</label>
+                    <input type="text" placeholder="People">
+                </div>
+                <div class="cp_iptxt">
+                    <label>Place</label>
+                    <input type="text" placeholder="Place">
+                </div>
+                <input type="submit" value="Create Content" class="btn filled">
             </form>
+
+            
         </div>
     </div>
 </div>
