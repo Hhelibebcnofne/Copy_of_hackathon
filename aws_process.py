@@ -22,14 +22,14 @@ url_dic = {'apiId' : '27tar9360c', 'region' : 'ap-northeast-1', 'stage' : 'prod'
 
 aws_process = Blueprint('aws_process', __name__)
 
-THRESHOLD = 60
+THRESHOLD = 80
 
-@aws_process.route("/test", methods=['GET', 'POST'])
-def test():
+@aws_process.route("/result", methods=['GET', 'POST'])
+def result():
     if request.method == 'POST':
         #ラベルをとってくる処理
         files = request.files.getlist('images')
-        people = request.form.get('people')
+        people = request.form.get('people').split("、")
         place = request.form.get('place')
         get_labels = []
         file_path_list = []
@@ -42,22 +42,51 @@ def test():
                 file_path_list.append(label_path)
                 draw_box(file_path, label_path, ins)
             except:
-                error_li = []
-                error_li.append("Error!")
-                error_msg = "Can't get label!"
-                error_li.append(error_msg)
-                error_li.append("Try Again!")
+                error_li = ["Error!","Can't get label!","Try Again!"]
                 return render_template('index.html', errors = error_li)
             for label in ins.data:
                 if label not in get_labels:
                     get_labels.append(label)
         
         #文章をChatGPTに作成してもらう処理
-        question = ""
-        for label in get_labels:
-            question += label + "、"
+        people_li = request.form.get('people').split("、")
+        place = request.form.get('place')
+        is_people = False
+        is_place = False
+        question = ''
+        
+        if people_li[0] != '':
+            is_people = True
+            question += "人物："
+            for i in range(len(people_li)):
+                if i == len(people_li) - 1:
+                    question += f'{people_li[i]}\n'
+                else:
+                    question += f'{people_li[i]}、'
+        
+        if len(place) != 0:
+            is_place = True
+            question += f'場所：{place}\n'
+            
+        question += 'ラベル：'
+        
+        for i in range(len(get_labels)):
+            if i == len(get_labels) - 1:
+                question += f'{get_labels[i]}\n'
+            else:
+                question += f'{get_labels[i]}、'
+                
+        if is_people and is_place:
+            question += "場所と人物は全て、ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
+        elif is_people:
+            question += "人物は絶対全て、ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
+        elif is_place:
+            question += "場所は絶対、ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
         else:
-            question += "の単語から必要な単語を使って、かっこいいインスタに投稿する文章を考えて"
+            question += "ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
+        
+        print(question)
+        
         openai.api_key = OPEN_AI_KEY
         
         try:
@@ -71,10 +100,11 @@ def test():
             ans = response["choices"][0]["message"]["content"]
             
         except:
-            return render_template('index.html')
+            error_li = ["Error!","Something Happen!","Try Again!"]
+            return render_template('index.html', errors = error_li)
 
         
-        return render_template('test.html', test = ans, files = file_path_list)
+        return render_template('result.html', test = ans, files = file_path_list)
     else:
         img_path = './static/img/keep_img/flask.png'
         label_path = './static/img/label_img/flask.png'
@@ -88,7 +118,7 @@ def test():
         """
         li = [img_path,a,label_path,label_path_2]
         files = [label_path,label_path_2]
-        return render_template('test.html', test = a, files = files)
+        return render_template('result.html', test = a, files = files)
 
 def trans_img(img_path) -> Image:
     """
@@ -218,11 +248,6 @@ class labels():
         """
         li = []
         for i in self.response['payloads']['Labels']:
-            # テスト用
-            # print(i['Name'])
-            # print(i['Confidence'])
-        #     d.append(i['Name'])
-        # return d
             li.append(i['Name'])
         return li
 
