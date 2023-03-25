@@ -90,6 +90,33 @@ def test():
         files = [label_path,label_path_2]
         return render_template('test.html', test = a, files = files)
 
+def trans_img(img_path) -> Image:
+    """
+    スマホの画像がたまに横向いたりする現象対策の関数です。
+    パスを受け取ってImageを返します。
+    """
+    convert_image = {
+    1: lambda img: img,
+    2: lambda img: img.transpose(Image.Transpose.FLIP_LEFT_RIGHT),                              # 左右反転
+    3: lambda img: img.transpose(Image.Transpose.ROTATE_180),                                   # 180度回転
+    4: lambda img: img.transpose(Image.Transpose.FLIP_TOP_BOTTOM),                              # 上下反転
+    5: lambda img: img.transpose(Image.Transpose.FLIP_LEFT_RIGHT).transpose(Image.Transpose.ROTATE_90),  # 左右反転＆反時計回りに90度回転
+    6: lambda img: img.transpose(Image.Transpose.ROTATE_270),                                   # 反時計回りに270度回転
+    7: lambda img: img.transpose(Image.Transpose.FLIP_LEFT_RIGHT).transpose(Image.Transpose.ROTATE_270), # 左右反転＆反時計回りに270度回転
+    8: lambda img: img.transpose(Image.Transpose.ROTATE_90),                                    # 反時計回りに90度回転
+    }
+
+    img = Image.open(img_path)
+
+    try:
+        exif = img._getexif()
+        if exif:
+            orientation = exif.get(0x112, 1)
+            img = convert_image[orientation](img)
+    except AttributeError:
+        print(img)
+    return img.convert('RGB')
+
 # 高さと幅は小さくしたほうが、この関数の処理速度もAWSからの応答も目に見えて速くなる。
 def resize_img(path:str, max_width:int, max_height:int) -> bytes:
     """
@@ -103,8 +130,9 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
     """
     # この関数を通しても5MBより大きな場合が起きないようにする
     Max_size = 5000 # データ容量の最大値。KBで指定。今回はAWSの仕様に合わせて5MBで固定。
-    img = Image.open(path).convert('RGB')
+    img = trans_img(path)
     new_img = img.copy()
+    print(new_img.size)
     max_length = 0
     while True:
         if new_img.size[1] > max_height or new_img.size[0] > max_width:
@@ -112,7 +140,7 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
             max_length = max_height if new_img.size[1] > new_img.size[0] else max_width
         elif max_length == 0:
             # 画像サイズの縦と横の大きな方を代入
-            max_length = new_img.size[1] if new_img.size[1] > new_img.size[0] else new_img.size[0]
+            max_length = max(new_img.size)
         else:
             # 1周おきに画像最大サイズの許容量が20%縮む。
             max_length *= 0.8
@@ -198,30 +226,37 @@ class labels():
             li.append(i['Name'])
         return li
 
-# ins = labels('./static/img/keep_img/football.jpeg', 60, url_dic)
-# print(ins.data)
-
-def draw_box(target_image : str,output : str, ins : labels) -> None:
+def draw_box(target_image : str, output : str, ins : labels) -> None:
     """
     境界線ボックスを表示するための関数。
     画像として一度imgフォルダに出力するようにしているものの、
     メモリ上で処理を完結することもできるはず。
-    target_imageには縮小後縮小前どちらの画像を入れてもうまくいくはず。
-    縮小後はまだ試してない。
+    target_imageには縮小後縮小前どちらの画像を入れてもうまくいくことを確認。
+    縮小後を扱う場合はresize_imgの返り値をそのまま入力にしてください。
     """
-    img = Image.open(target_image).convert('RGB')
+    img = trans_img(target_image)
     draw = ImageDraw.Draw(img)
     # 日本語表示にフォントデータが必要なのでアップロードお願いします。
-    font = ImageFont.truetype('./static/meiryo.ttc', int(img.size[1] / 100))
+    # fontサイズ指定が結構微妙な問題かもしれん……。
+    # font = ImageFont.truetype('./static/meiryo.ttc', 24)
+    font_size = int(min(img.size) / 30)
+    font = ImageFont.truetype('./static/meiryo.ttc', font_size)
+    boxes = {}
     for i in ins.response['payloads']['Labels']:
-        # print(i['Name'], i['Instances'])
         for instance in i['Instances']:
             box = instance['BoundingBox']
             left = img.size[0] * box['Left']
             top = img.size[1] * box['Top']
             width = img.size[0] * box['Width']
             height = img.size[1] * box['Height']
-            draw.text((left, top), text = i['Name'], fill = '#00d400', font = font)
+            if not ((left, top, width, height) in boxes.keys()):
+                boxes[(left, top, width, height)] = i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%'
+                draw.text((left, top), text = boxes[(left, top, width, height)], fill = '#00d400', font = font)
+            elif (', ' + i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%') in boxes[(left, top, width, height)]:
+                continue
+            else:
+                boxes[(left, top, width, height)] += ', ' + i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%'
+                draw.text((left, top), text = boxes[(left, top, width, height)], fill = '#00d400', font = font)
             points = (
                 (left, top),
                 (left + width, top),
@@ -230,10 +265,10 @@ def draw_box(target_image : str,output : str, ins : labels) -> None:
                 (left, top))
             draw.line(points, fill='#00d400', width=3)
     # img.save('./static/img/adada.png', format='PNG', compless_level = 0)
-    # file.save(os.path.join('./static/img/keep_img',file.filename))
+    print(boxes)
     img.save(output, format='JPEG', quality = 90)
-# target_image = './static/img/keep_img/flask.png'
+
+
+# target_image = './static/img/1654259447208.png'
 # ins = labels(target_image, 60, url_dic)
-# print(ins.data)
-# print(ins.response)
-# draw_box(target_image, './static/img/keep_img/flask.png', ins)
+# draw_box(target_image, './static/img/adadi.jpg', ins)
