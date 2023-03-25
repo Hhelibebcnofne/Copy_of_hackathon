@@ -144,15 +144,20 @@ def draw_box(target_image : str,output : str, ins : labels) -> None:
     draw = ImageDraw.Draw(img)
     # 日本語表示にフォントデータが必要なのでアップロードお願いします。
     font = ImageFont.truetype('./static/meiryo.ttc', int(img.size[1] / 100))
+    boxes = {}
     for i in ins.response['payloads']['Labels']:
-        print(i['Name'], i['Instances'])
         for instance in i['Instances']:
             box = instance['BoundingBox']
             left = img.size[0] * box['Left']
             top = img.size[1] * box['Top']
             width = img.size[0] * box['Width']
             height = img.size[1] * box['Height']
-            draw.text((left, top), text = i['Name'], fill = '#00d400', font = font)
+            if not ((left, top, width, height) in boxes.keys()) :
+                boxes[(left, top, width, height)] = i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%'
+                draw.text((left, top), text = boxes[(left, top, width, height)], fill = '#00d400', font = font)
+            else:
+                boxes[(left, top, width, height)] += ', ' + i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%'
+                draw.text((left, top), text = boxes[(left, top, width, height)], fill = '#00d400', font = font)
             points = (
                 (left, top),
                 (left + width, top),
@@ -161,9 +166,10 @@ def draw_box(target_image : str,output : str, ins : labels) -> None:
                 (left, top))
             draw.line(points, fill='#00d400', width=3)
     # img.save('./static/img/adada.png', format='PNG', compless_level = 0)
+    print(boxes)
     img.save(output, format='JPEG', quality = 90)
 target_image = './static/img/1654259447208.png'
 ins = labels(target_image, 60, url_dic)
-print(ins.data)
+# print(ins.data)
 print(ins.response)
 draw_box(target_image, './static/img/adadi.jpg', ins)
