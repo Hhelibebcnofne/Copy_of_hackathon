@@ -32,16 +32,16 @@ def test():
         get_labels = []
         use_file_path = ""
         use_label_path = ""
+        file_path_list = []
         for file in files:
             file.save(os.path.join('./static/img/keep_img',file.filename))
             file_path = "./static/img/keep_img/" + file.filename
-            use_file_path = file_path
             try:
                 ins = labels(file_path, THRESHOLD, url_dic)
                 # print(ins.data)
                 # print(ins.response)
                 label_path = './static/img/label_img/' + file.filename
-                use_label_path = label_path
+                file_path_list.append(label_path)
                 draw_box(file_path, label_path, ins)
             except:
                 error_li = []
@@ -70,9 +70,8 @@ def test():
             ]
         )
         ans = response["choices"][0]["message"]["content"]
-        li = [use_file_path,ans,use_label_path]
         
-        return render_template('test.html', test = li)
+        return render_template('test.html', test = ans, files = file_path_list)
     else:
         img_path = './static/img/keep_img/flask.png'
         label_path = './static/img/label_img/flask.png'
@@ -85,7 +84,8 @@ def test():
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         """
         li = [img_path,a,label_path,label_path_2]
-        return render_template('test.html', test = li)
+        files = [label_path,label_path_2]
+        return render_template('test.html', test = a, files = files)
 
 # 高さと幅は小さくしたほうが、この関数の処理速度もAWSからの応答も目に見えて速くなる。
 def resize_img(path:str, max_width:int, max_height:int) -> bytes:
