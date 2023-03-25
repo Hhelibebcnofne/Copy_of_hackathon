@@ -132,13 +132,13 @@ class labels():
             li.append(i['Name'])
         return li
 
-def draw_box(target_image : str,output : str, ins : labels) -> None:
+def draw_box(target_image : str, output : str, ins : labels) -> None:
     """
     境界線ボックスを表示するための関数。
     画像として一度imgフォルダに出力するようにしているものの、
     メモリ上で処理を完結することもできるはず。
-    target_imageには縮小後縮小前どちらの画像を入れてもうまくいくはず。
-    縮小後はまだ試してない。
+    target_imageには縮小後縮小前どちらの画像を入れてもうまくいくことを確認。
+    縮小後を扱う場合はresize_imgの返り値をそのまま入力にしてください。
     """
     img = Image.open(target_image).convert('RGB')
     draw = ImageDraw.Draw(img)
@@ -168,8 +168,10 @@ def draw_box(target_image : str,output : str, ins : labels) -> None:
     # img.save('./static/img/adada.png', format='PNG', compless_level = 0)
     print(boxes)
     img.save(output, format='JPEG', quality = 90)
-target_image = './static/img/1654259447208.png'
-ins = labels(target_image, 60, url_dic)
+ins = labels('./static/img/1654259447208.png', 60, url_dic)
+target_image = resize_img('./static/img/1654259447208.png', 5000, 5000)
 # print(ins.data)
-print(ins.response)
+# for i in ins.response:
+#     i['payloads']
+# print(ins.response)
 draw_box(target_image, './static/img/adadi.jpg', ins)
