@@ -15,8 +15,16 @@
             Result
         </h2>
         <div class="result__inner">
-            <div class="result__img cover-slide">
-                <img class="img-zoom" src="{{test[0]}}" />
+            <!-- <div class="result__img cover-slide">
+                <img class="img-zoom" src="{{test[3]}}" />
+            </div> -->
+            <div class="hscroll result__img cover-slide">
+                <ul>
+                    <li><img class="img-zoom" src="{{test[2]}}"></li>
+                    <li><img class="img-zoom" src="{{test[3]}}"></li>
+                </ul>
+                <span class="arrow left"></span>
+                <span class="arrow right"></span>
             </div>
             <div class="result__description item">
                 <p>{{test[1]}}</p>
@@ -24,9 +32,50 @@
         </div>
     </section>
 </main>
-<img src="{{test[2]}}">
+
+
+
+<main style="margin-top: 100px;">
+    <section class="result">
+        <h2 class="result__title">
+            Result
+        </h2>
+        <div class="result__inner">
+            <div class="result__img cover-slide">
+                <img class="img-zoom" src="{{test[3]}}" />
+            </div>
+            <div class="result__description item">
+                <p>{{test[1]}}</p>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- <img src="{{test[2]}}"> -->
+<div class="hscroll">
+	<ul>
+		<li><img src="{{test[2]}}"></li>
+		<li><img src="{{test[3]}}"></li>
+	</ul>
+	<span class="arrow left"></span>
+	<span class="arrow right"></span>
+</div>
 <div class="btns">
     <a class="btn filled" href="/">Try Again!</a>
     <a class="btn filled" href="#">Post!</a>
 </div>
+
+<script>
+    document.querySelectorAll('.left').forEach(elm => {
+        elm.onclick = function () {
+            let ul = elm.parentNode.querySelector('ul');
+            ul.scrollLeft -= ul.clientWidth;
+        };
+    });
+    document.querySelectorAll('.right').forEach(elm => {
+        elm.onclick = function () {
+            let ul = elm.parentNode.querySelector('ul');
+            ul.scrollLeft += ul.clientWidth;
+        };
+    });
+</script>
 {% endblock %}

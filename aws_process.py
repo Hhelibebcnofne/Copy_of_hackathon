@@ -75,6 +75,8 @@ def test():
         return render_template('test.html', test = li)
     else:
         img_path = './static/img/keep_img/flask.png'
+        label_path = './static/img/label_img/flask.png'
+        label_path_2 = './static/img/label_img/football.jpeg'
         a = """
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
@@ -82,7 +84,7 @@ def test():
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         """
-        li = [img_path,a]
+        li = [img_path,a,label_path,label_path_2]
         return render_template('test.html', test = li)
 
 # 高さと幅は小さくしたほうが、この関数の処理速度もAWSからの応答も目に見えて速くなる。
