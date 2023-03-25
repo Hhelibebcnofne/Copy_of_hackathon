@@ -30,6 +30,33 @@ def test():
     else:
         return render_template('index.html')
 
+def trans_img(img_path) -> Image:
+    """
+    スマホの画像がたまに横向いたりする現象対策の関数です。
+    パスを受け取ってImageを返します。
+    """
+    convert_image = {
+    1: lambda img: img,
+    2: lambda img: img.transpose(Image.Transpose.FLIP_LEFT_RIGHT),                              # 左右反転
+    3: lambda img: img.transpose(Image.Transpose.ROTATE_180),                                   # 180度回転
+    4: lambda img: img.transpose(Image.Transpose.FLIP_TOP_BOTTOM),                              # 上下反転
+    5: lambda img: img.transpose(Image.Transpose.FLIP_LEFT_RIGHT).transpose(Image.Transpose.ROTATE_90),  # 左右反転＆反時計回りに90度回転
+    6: lambda img: img.transpose(Image.Transpose.ROTATE_270),                                   # 反時計回りに270度回転
+    7: lambda img: img.transpose(Image.Transpose.FLIP_LEFT_RIGHT).transpose(Image.Transpose.ROTATE_270), # 左右反転＆反時計回りに270度回転
+    8: lambda img: img.transpose(Image.Transpose.ROTATE_90),                                    # 反時計回りに90度回転
+    }
+
+    img = Image.open(img_path)
+
+    try:
+        exif = img._getexif()
+        if exif:
+            orientation = exif.get(0x112, 1)
+            img = convert_image[orientation](img)
+    except AttributeError:
+        print(img)
+    return img.convert('RGB')
+
 # 高さと幅は小さくしたほうが、この関数の処理速度もAWSからの応答も目に見えて速くなる。
 def resize_img(path:str, max_width:int, max_height:int) -> bytes:
     """
@@ -43,8 +70,9 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
     """
     # この関数を通しても5MBより大きな場合が起きないようにする
     Max_size = 5000 # データ容量の最大値。KBで指定。今回はAWSの仕様に合わせて5MBで固定。
-    img = Image.open(path).convert('RGB')
+    img = trans_img(path)
     new_img = img.copy()
+    print(new_img.size)
     max_length = 0
     while True:
         if new_img.size[1] > max_height or new_img.size[0] > max_width:
@@ -52,7 +80,7 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
             max_length = max_height if new_img.size[1] > new_img.size[0] else max_width
         elif max_length == 0:
             # 画像サイズの縦と横の大きな方を代入
-            max_length = new_img.size[1] if new_img.size[1] > new_img.size[0] else new_img.size[0]
+            max_length = max(new_img.size)
         else:
             # 1周おきに画像最大サイズの許容量が20%縮む。
             max_length *= 0.8
@@ -140,10 +168,13 @@ def draw_box(target_image : str, output : str, ins : labels) -> None:
     target_imageには縮小後縮小前どちらの画像を入れてもうまくいくことを確認。
     縮小後を扱う場合はresize_imgの返り値をそのまま入力にしてください。
     """
-    img = Image.open(target_image).convert('RGB')
+    img = trans_img(target_image)
     draw = ImageDraw.Draw(img)
     # 日本語表示にフォントデータが必要なのでアップロードお願いします。
-    font = ImageFont.truetype('./static/meiryo.ttc', int(img.size[1] / 100))
+    # fontサイズ指定が結構微妙な問題かもしれん……。
+    # font = ImageFont.truetype('./static/meiryo.ttc', 24)
+    font_size = int(min(img.size) / 30)
+    font = ImageFont.truetype('./static/meiryo.ttc', font_size)
     boxes = {}
     for i in ins.response['payloads']['Labels']:
         for instance in i['Instances']:
@@ -170,11 +201,8 @@ def draw_box(target_image : str, output : str, ins : labels) -> None:
     # img.save('./static/img/adada.png', format='PNG', compless_level = 0)
     print(boxes)
     img.save(output, format='JPEG', quality = 90)
-ins = labels('./static/img/1654259447208.png', 60, url_dic)
-target_image = resize_img('./static/img/1654259447208.png', 5000, 5000)
-# target_image = './static/img/1654259447208.png'
-# print(ins.data)
-# for i in ins.response:
-#     i['payloads']
-# print(ins.response)
+
+
+target_image = './static/img/1654259447208.png'
+ins = labels(target_image, 60, url_dic)
 draw_box(target_image, './static/img/adadi.jpg', ins)
