@@ -29,6 +29,8 @@ def test():
     if request.method == 'POST':
         #ラベルをとってくる処理
         files = request.files.getlist('images')
+        people = request.form.get('people')
+        place = request.form.get('place')
         get_labels = []
         file_path_list = []
         for file in files:
@@ -58,14 +60,19 @@ def test():
             question += "の単語から必要な単語を使って、かっこいいインスタに投稿する文章を考えて"
         openai.api_key = OPEN_AI_KEY
         
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                # {"role": "system", "content": "間違った解答をして下さい"}, #※1後述
-                {"role": "user", "content": question}, #※1後述
-            ]
-        )
-        ans = response["choices"][0]["message"]["content"]
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    # {"role": "system", "content": "間違った解答をして下さい"}, #※1後述
+                    {"role": "user", "content": question}, #※1後述
+                ]
+            )
+            ans = response["choices"][0]["message"]["content"]
+            
+        except:
+            return render_template('index.html')
+
         
         return render_template('test.html', test = ans, files = file_path_list)
     else:
