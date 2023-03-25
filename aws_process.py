@@ -152,9 +152,11 @@ def draw_box(target_image : str, output : str, ins : labels) -> None:
             top = img.size[1] * box['Top']
             width = img.size[0] * box['Width']
             height = img.size[1] * box['Height']
-            if not ((left, top, width, height) in boxes.keys()) :
+            if not ((left, top, width, height) in boxes.keys()):
                 boxes[(left, top, width, height)] = i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%'
                 draw.text((left, top), text = boxes[(left, top, width, height)], fill = '#00d400', font = font)
+            elif (', ' + i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%') in boxes[(left, top, width, height)]:
+                continue
             else:
                 boxes[(left, top, width, height)] += ', ' + i['Name'] + ' : ' + str(int(instance['Confidence'])) + '%'
                 draw.text((left, top), text = boxes[(left, top, width, height)], fill = '#00d400', font = font)
@@ -170,6 +172,7 @@ def draw_box(target_image : str, output : str, ins : labels) -> None:
     img.save(output, format='JPEG', quality = 90)
 ins = labels('./static/img/1654259447208.png', 60, url_dic)
 target_image = resize_img('./static/img/1654259447208.png', 5000, 5000)
+# target_image = './static/img/1654259447208.png'
 # print(ins.data)
 # for i in ins.response:
 #     i['payloads']
