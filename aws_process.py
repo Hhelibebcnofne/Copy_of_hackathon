@@ -30,16 +30,12 @@ def test():
         #ラベルをとってくる処理
         files = request.files.getlist('images')
         get_labels = []
-        use_file_path = ""
-        use_label_path = ""
         file_path_list = []
         for file in files:
             file.save(os.path.join('./static/img/keep_img',file.filename))
             file_path = "./static/img/keep_img/" + file.filename
             try:
                 ins = labels(file_path, THRESHOLD, url_dic)
-                # print(ins.data)
-                # print(ins.response)
                 label_path = './static/img/label_img/' + file.filename
                 file_path_list.append(label_path)
                 draw_box(file_path, label_path, ins)
