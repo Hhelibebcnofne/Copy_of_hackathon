@@ -77,13 +77,13 @@ def result():
                 question += f'{get_labels[i]}、'
                 
         if is_people and is_place:
-            question += "場所と人物は全て、ラベルは必要なものだけを使って、インスタに投稿するための投稿文を日本語で考えて！"
+            question += "場所と人物は全て、ラベルは必要なものだけを使って、インスタに投稿するための不思議な投稿文を日本語で考えて！"
         elif is_people:
-            question += "人物は絶対全て、ラベルは必要なものだけを使って、インスタに投稿するための投稿文を日本語で考えて！"
+            question += "人物は絶対全て、ラベルは必要なものだけを使って、インスタに投稿するための不思議な投稿文を日本語で考えて！"
         elif is_place:
-            question += "場所は絶対、ラベルは必要なものだけを使って、インスタに投稿するための投稿文を日本語で考えて！"
+            question += "場所は絶対、ラベルは必要なものだけを使って、インスタに投稿するための不思議な投稿文を日本語で考えて！"
         else:
-            question += "ラベルは必要なものだけを使って、インスタに投稿するための投稿文を日本語で考えて！"
+            question += "ラベルは必要なものだけを使って、インスタに投稿するための不思議な投稿文を日本語で考えて！"
         
         print(question)
         
@@ -98,6 +98,8 @@ def result():
                 ]
             )
             ans = response["choices"][0]["message"]["content"]
+            ans = ans.replace('「','')
+            ans = ans.replace('」','')
             
         except:
             error_li = ["Error!","Something Happen!","Try Again!"]
