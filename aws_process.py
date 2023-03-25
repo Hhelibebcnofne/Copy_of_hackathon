@@ -9,7 +9,7 @@ import base64
 import json
 
 #画像圧縮に使用
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 
 
@@ -30,11 +30,19 @@ def test():
         #ラベルをとってくる処理
         files = request.files.getlist('images')
         get_labels = []
+        use_file_path = ""
+        use_label_path = ""
         for file in files:
             file.save(os.path.join('./static/img/keep_img',file.filename))
             file_path = "./static/img/keep_img/" + file.filename
+            use_file_path = file_path
             try:
                 ins = labels(file_path, THRESHOLD, url_dic)
+                # print(ins.data)
+                # print(ins.response)
+                label_path = './static/img/label_img/' + file.filename
+                use_label_path = label_path
+                draw_box(file_path, label_path, ins)
             except:
                 error_li = []
                 error_li.append("Error!")
@@ -62,9 +70,11 @@ def test():
             ]
         )
         ans = response["choices"][0]["message"]["content"]
+        li = [use_file_path,ans,use_label_path]
         
-        return render_template('test.html', test = ans)
+        return render_template('test.html', test = li)
     else:
+        img_path = './static/img/keep_img/flask.png'
         a = """
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
@@ -72,7 +82,8 @@ def test():
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章ダミー文章
         """
-        return render_template('test.html', test = a)
+        li = [img_path,a]
+        return render_template('test.html', test = li)
 
 # 高さと幅は小さくしたほうが、この関数の処理速度もAWSからの応答も目に見えて速くなる。
 def resize_img(path:str, max_width:int, max_height:int) -> bytes:
@@ -102,7 +113,7 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
             max_length *= 0.8
         new_img = img.copy() #劣化画像を更に劣化させることがないように一度画像を初期化
         new_img.thumbnail((max_length, max_length))
-        print('max_length:' + str(max_length) + ' height:' + str(new_img.size[1]) + ' width:' + str(new_img.size[0]))
+        # print('max_length:' + str(max_length) + ' height:' + str(new_img.size[1]) + ' width:' + str(new_img.size[0]))
         new_img_size = os.path.getsize(path) / 1000
         # 画質を調整
         for i in range(100, -1, -5): 
@@ -113,8 +124,8 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
             if new_img_size > Max_size and i > 0:
                 print(str(new_img_size) + 'KB '+ 'quality=' + str(i))
             elif new_img_size <= Max_size:
-                print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'quality=' + str(i))
-                return buffer.getvalue()
+                # print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'quality=' + str(i))
+                return buffer
                 
 
 
@@ -126,7 +137,8 @@ class labels():
     結果として翻訳済みのラベルが返ってくる。
     翻訳処理とAmazon Rekognitionの処理はAPI GatewayとAWS lambdaを経由。
     流れはこうなってる……はず。
-    get_label() -> API Gateway -> AWS lambda -> Amazon Rekognition -> AWS lambda -> Amazon Translate -> AWS lambda -> API Gateway -> get_label()
+    get_label() -> API Gateway -> AWS lambda -> Amazon Rekognition -> 
+    AWS lambda -> Amazon Translate -> AWS lambda -> API Gateway -> get_label()
     """
     def __init__(self, img_path:str, threshold:int, urldata:dict) -> None:
         """
@@ -156,7 +168,9 @@ class labels():
         # 画像をリサイズして取得
         img = resize_img(self.img_path, 5000, 5000)
         # base64文字列に変換
-        img = base64.b64encode(img).decode()
+        # img = base64.b64encode(img).decode()
+        img = base64.b64encode(img.getvalue()).decode()
+        # print(img)
         response = requests.post(
             url = self.url,
             data = json.dumps({'image_base64str' : img, 'threshold' : self.threshold}),
@@ -182,69 +196,39 @@ class labels():
 # ins = labels('./static/img/keep_img/football.jpeg', 60, url_dic)
 # print(ins.data)
 
-# -----------ここからテスト用コード-----------
-# 使うところ以外コメントアウトして使用してた。やったこと思い出すために使ってます。無視してください。
-# ins = labels('./static/img/1654259447208.png', 60, url_dic)
+def draw_box(target_image : str,output : str, ins : labels) -> None:
+    """
+    境界線ボックスを表示するための関数。
+    画像として一度imgフォルダに出力するようにしているものの、
+    メモリ上で処理を完結することもできるはず。
+    target_imageには縮小後縮小前どちらの画像を入れてもうまくいくはず。
+    縮小後はまだ試してない。
+    """
+    img = Image.open(target_image).convert('RGB')
+    draw = ImageDraw.Draw(img)
+    # 日本語表示にフォントデータが必要なのでアップロードお願いします。
+    font = ImageFont.truetype('./static/meiryo.ttc', int(img.size[1] / 100))
+    for i in ins.response['payloads']['Labels']:
+        # print(i['Name'], i['Instances'])
+        for instance in i['Instances']:
+            box = instance['BoundingBox']
+            left = img.size[0] * box['Left']
+            top = img.size[1] * box['Top']
+            width = img.size[0] * box['Width']
+            height = img.size[1] * box['Height']
+            draw.text((left, top), text = i['Name'], fill = '#00d400', font = font)
+            points = (
+                (left, top),
+                (left + width, top),
+                (left + width, top + height),
+                (left, top + height),
+                (left, top))
+            draw.line(points, fill='#00d400', width=3)
+    # img.save('./static/img/adada.png', format='PNG', compless_level = 0)
+    # file.save(os.path.join('./static/img/keep_img',file.filename))
+    img.save(output, format='JPEG', quality = 90)
+# target_image = './static/img/keep_img/flask.png'
+# ins = labels(target_image, 60, url_dic)
 # print(ins.data)
-
-# im = Image.open('./static/img/flask.png').convert('RGB')
-# # # img_array = np.array(im)
-# buffer = BytesIO()
-# im.save(
-#     buffer,
-#     format='JPEG',
-#     quality=100)
-
-# im.save(
-#     './static/img/adada.jpg',
-#     format='JPEG',
-#     quality=100)
-# print(os.path.getsize('./static/img/adada.jpg'))
-# print(len(buffer.getvalue()))
-# Image.fromarray(img_array).save(
-#     buffer,
-#     format='JPEG',
-#     quality=10)
-# ここが
-# img2 = Image.open(buffer)
-# img_array2 = np.array(img2)
-# print(len(base64.b64encode(buffer.getvalue()).decode()))
-# print(buffer.getvalue())
-# print(len(base64.b64encode(img2).decode()))
-
-
-# ins = labels('./static/img/flask.png', 60, url_dic)
-# print(ins.data)
-# img = cv2.imread('./static/img/flask.png')
-# print(img)
-# ret, encoded = cv2.imencode(".png", img,  [int(cv2.IMWRITE_PNG_COMPRESSION ), 10])
-# print(ret)
-# print(encoded)
-# print(base64.b64encode(encoded).decode())
-# aa = cv2.imdecode(encoded, flags=cv2.IMREAD_COLOR)
-# print(base64.b64encode(encoded).decode())
-# print(len(base64.b64encode(encoded).decode()))
-
-# response = requests.post(
-#             url = 'https://' + url_dic['apiId'] + '.execute-api.' + url_dic['region'] + '.amazonaws.com/' + url_dic['stage'] + '/' + url_dic['resource'],
-#             data = json.dumps({'image_base64str' : base64.b64encode(buffer.getvalue()).decode(), 'threshold' : 60}),
-#             headers = {'Content-Type' : 'application/json', 'x-api-key' : key}
-#             )
-# print(response.json()['payloads']['Labels'])
-# print(aa)
-# with open('./static/img/flask.png', mode='rb') as f:
-#     img = f.read()
-# print(img)
-# img = base64.b64encode(img).decode()
-# print(len(img))
-# print(img)
-# 
-# path = './static/img/1654259447208.png'
-# print(type(resize_img(path, 2000, 2000)))
-# response = requests.post(
-#             url = 'https://' + url_dic['apiId'] + '.execute-api.' + url_dic['region'] + '.amazonaws.com/' + url_dic['stage'] + '/' + url_dic['resource'],
-#             data = json.dumps({'image_base64str' : base64.b64encode(resize_img(path, 2000, 2000).getvalue()).decode(), 'threshold' : 50}),
-#             headers = {'Content-Type' : 'application/json', 'x-api-key' : key}
-#             )
-# print(response.json()['payloads']['Labels'])
-# -----------ここまでテスト用コード-----------
+# print(ins.response)
+# draw_box(target_image, './static/img/keep_img/flask.png', ins)

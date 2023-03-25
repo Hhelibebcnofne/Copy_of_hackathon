@@ -329,7 +329,7 @@ img {
   vertical-align: bottom;
 }
 
-.mb-sm, .service__img, .sub-title {
+.mb-sm, .service__img, .result__img, .sub-title {
   margin-bottom: 16px !important;
 }
 
@@ -355,18 +355,18 @@ img {
   }
 }
 
-.content-width, .header__inner, .service, .footer {
+.content-width, .header__inner, .service, .result, .footer {
   width: 90%;
   margin: 0 auto;
   max-width: 1070px;
 }
 
-.flex, .header__nav, .service__inner {
+.flex, .header__nav, .service__inner, .result__inner {
   display: flex;
   flex-direction: column;
 }
 @media screen and (min-width: 600px) {
-  .flex, .header__nav, .service__inner {
+  .flex, .header__nav, .service__inner, .result__inner {
     flex-direction: row;
     flex-wrap: wrap;
   }
@@ -560,27 +560,10 @@ a {
   margin: 15px 30px;
 }
 
-.result {
-  width: 70%;
-  margin: 0 auto;
-  margin-top: 100px;
-}
-.result h1 {
-  text-align: center;
-  margin-bottom: 50px;
-}
-.result p {
-  margin: 0 auto;
+.service__title {
+  font-size: 30px;
   text-align: center;
 }
-.result .btn_link {
-  display: flex;
-  margin-top: 50px;
-}
-.result a {
-  text-align: center;
-}
-
 .service__inner {
   position: relative;
   z-index: 0;
@@ -649,6 +632,63 @@ a {
   .service__description {
     margin-bottom: 40px;
   }
+}
+
+.result__title {
+  font-size: 30px;
+  text-align: center;
+}
+.result__inner {
+  position: relative;
+  z-index: 0;
+  background: #eaebe6;
+  padding: 15px;
+}
+@media screen and (min-width: 600px) {
+  .result__inner {
+    padding: 50px;
+  }
+}
+.result__img {
+  height: 300px;
+}
+@media screen and (min-width: 600px) {
+  .result__img {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 600px) {
+  .result__img {
+    flex-basis: 47%;
+  }
+}
+@media screen and (min-width: 960px) {
+  .result__img {
+    height: 400px;
+  }
+}
+.result__img > img {
+  position: relative;
+  z-index: -1;
+  opacity: 1;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+@media screen and (min-width: 600px) {
+  .result__description {
+    width: 40%;
+    text-align: center;
+    margin-left: 10%;
+    margin-top: 5%;
+  }
+}
+
+.btns {
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .footer {

@@ -1,12 +1,32 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="result">
+<!-- <div class="result">
     <h1>Result</h1>
-    <p>{{test}}</p>
+    <p>{{test[1]}}</p>
     <div class="btn_link">
         <a class="btn filled" href="/">Try Again!</a>
         <a class="btn filled" href="#">Post!</a>
     </div>
+</div> -->
+<main style="margin-top: 100px;">
+    <section class="result">
+        <h2 class="result__title">
+            Result
+        </h2>
+        <div class="result__inner">
+            <div class="result__img cover-slide">
+                <img class="img-zoom" src="{{test[0]}}" />
+            </div>
+            <div class="result__description item">
+                <p>{{test[1]}}</p>
+            </div>
+        </div>
+    </section>
+</main>
+<img src="{{test[2]}}">
+<div class="btns">
+    <a class="btn filled" href="/">Try Again!</a>
+    <a class="btn filled" href="#">Post!</a>
 </div>
 {% endblock %}
