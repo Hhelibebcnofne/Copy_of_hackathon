@@ -231,7 +231,7 @@ class labels():
         リクエスト送信用関数。
         """
         # 画像をリサイズして取得
-        img = resize_img(self.img_path, 5000, 5000)
+        img = resize_img(self.img_path, 2000, 2000)
         # base64文字列に変換
         # img = base64.b64encode(img).decode()
         img = base64.b64encode(img.getvalue()).decode()
