@@ -21,8 +21,13 @@
             </div>
             <div class="result__description item">
                 <p>{{test}}</p>
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-url="https://www.instextgen.jp/" data-text="{{test}}" data-hashtags="投稿文Generator"
-                class="twitter-share-button btn filled" data-show-count="false" data-size="large">Tweet</a>
+                <div class="share">
+                    <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-url="https://www.instextgen.jp/" data-text="{{test}}" data-hashtags="投稿文Generator"
+                    class="twitter-share-button btn filled" data-show-count="false" data-size="large">Tweet</a>
+                    <a href="//timeline.line.me/social-plugin/share?url=https://www.instextgen.jp&text={{test}}" class="btn filled line" target="_blank" rel="nofollow noopener noreferrer">
+                        LINE
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -30,13 +35,9 @@
 <div class="btns">
     <a class="btn filled" href="/">Try Again!</a>
     <!-- <a class="btn filled" href="#">Post!</a> -->
-    <!-- <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-url="https://www.instextgen.jp/" data-text="{{test}}"
-    class="btn filled" data-show-count="false" data-size="large">Post!</a> -->
-    <!-- <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-url="https://www.instextgen.jp/" data-text="{{test}}"
-    class="twitter-share-button btn filled" data-show-count="false" data-size="large">Tweet</a> -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </div>
 
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <script>
     document.querySelectorAll('.left').forEach(elm => {
         elm.onclick = function () {

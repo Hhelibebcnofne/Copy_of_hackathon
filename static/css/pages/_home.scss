@@ -304,10 +304,31 @@ a {
     }
   }
 
+  .share {
+    font-size: 13px;
+    line-height: 20px;
+    display: flex;
+    // background-color: red;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    vertical-align: top;
+  }
+
   .twitter-share-button {
     display: block;
     margin: 0 auto;
     margin-top: 30px;
+  }
+
+  .line {
+    display: block;
+    background-color: #06c755;
+    border: none;
+    margin-top: 27px;
+    border-radius: 9999px;
+    width: 97px;
+    text-align: center;
+    box-shadow:none
   }
 
 }
