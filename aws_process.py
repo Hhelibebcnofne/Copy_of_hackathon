@@ -102,8 +102,8 @@ def result():
             ans = ans.replace('」','')
 
         except Exception as e:
-            error_li = ["Error!","Something Happen!","Try Again!"]
-            return render_template('index.html', errors = e)
+            error_li = ["Error!","Something Happen!","Try Again!", e.message]
+            return render_template('index.html', errors = error_li)
 
 
         return render_template('result.html', test = ans, files = file_path_list)
