@@ -101,8 +101,8 @@ def result():
             ans = ans.replace('「','')
             ans = ans.replace('」','')
 
-        except Exception as e:
-            error_li = ["Error!","Something Happen!","Try Again!", e.message]
+        except:
+            error_li = ["Error!","Something Happen!","Try Again!"]
             return render_template('index.html', errors = error_li)
 
 
