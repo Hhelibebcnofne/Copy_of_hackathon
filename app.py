@@ -7,7 +7,7 @@ import openai
 app = Flask(__name__, static_folder = './static')
 app.register_blueprint(aws_process)
 load_dotenv()
-OPEN_AI_KEY = "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"
+OPEN_AI_KEY = os.getenv("OPEN_AI_KEY")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -26,7 +26,7 @@ def service():
 #         question = ""
 #         is_people = False
 #         is_place = False
-        
+
 #         if people_li[0] != '':
 #             is_people = True
 #             question += "人物："
@@ -35,19 +35,19 @@ def service():
 #                     question += f'{people_li[i]}\n'
 #                 else:
 #                     question += f'{people_li[i]}、'
-        
+
 #         if len(place) != 0:
 #             is_place = True
 #             question += f'場所：{place}\n'
-            
+
 #         question += 'ラベル：'
 #         for i in range(len(lable_li)):
 #             if i == len(lable_li) - 1:
 #                 question += f'{lable_li[i]}\n'
 #             else:
 #                 question += f'{lable_li[i]}、'
-        
-            
+
+
 #         if is_people and is_place:
 #             question += "場所と人物は全て、ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
 #         elif is_people:
@@ -56,7 +56,7 @@ def service():
 #             question += "場所は絶対、ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
 #         else:
 #             question += "ラベルは必要なものだけを使って、インスタに投稿するための文章を日本語で考えて"
-            
+
 #         print(question)
 
 #         openai.api_key = os.environ['OPEN_AI_KEY']
@@ -70,11 +70,11 @@ def service():
 #         )
 #         aaa = response["choices"][0]["message"]["content"]
 #         li = [people_li,place,aaa]
-                
+
 #         return render_template('gpt.html',li = li)
 #     else:
 #         return render_template('index.html')
-    
+
 @app.route('/images', methods=['GET','POST'])
 def images():
     if request.method == 'POST':

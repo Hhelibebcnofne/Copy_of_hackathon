@@ -14,8 +14,8 @@ from io import BytesIO
 
 
 # ↓バックエンドだしどうでもいいんだろうけど、APIキーなんで環境変数とかにできるとセキュリティ的に良さげ？
-key = 'yTXH7Sw2oy2SoDL08yf004W0712Ytrlj1WLEvUar'
-OPEN_AI_KEY = "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"
+key = os.getenv("AWS_API_KEY")
+OPEN_AI_KEY = os.getenv("OPEN_AI_KEY")
 
 # リクエスト用URL生成に使うデータ。地域とかその辺。
 url_dic = {'apiId' : '27tar9360c', 'region' : 'ap-northeast-1', 'stage' : 'prod', 'resource' : 'detect'}
@@ -47,14 +47,14 @@ def result():
             for label in ins.data:
                 if label not in get_labels:
                     get_labels.append(label)
-        
+
         #文章をChatGPTに作成してもらう処理
         people_li = request.form.get('people').split("、")
         place = request.form.get('place')
         is_people = False
         is_place = False
         question = ''
-        
+
         if people_li[0] != '':
             is_people = True
             question += "人物："
@@ -63,19 +63,19 @@ def result():
                     question += f'{people_li[i]}\n'
                 else:
                     question += f'{people_li[i]}、'
-        
+
         if len(place) != 0:
             is_place = True
             question += f'場所：{place}\n'
-            
+
         question += 'ラベル：'
-        
+
         for i in range(len(get_labels)):
             if i == len(get_labels) - 1:
                 question += f'{get_labels[i]}\n'
             else:
                 question += f'{get_labels[i]}、'
-                
+
         if is_people and is_place:
             question += "場所と人物は全て、ラベルは必要なものだけを使って、SNSに投稿するための面白い投稿文を日本語で考えて!"
         elif is_people:
@@ -84,11 +84,11 @@ def result():
             question += "場所は絶対、ラベルは必要なものだけを使って、SNSに投稿するための面白い投稿文を日本語で考えて!"
         else:
             question += "ラベルは必要なものだけを使って、SNSに投稿するための面白い投稿文を日本語で考えて!"
-        
+
         print(question)
-        
+
         openai.api_key = OPEN_AI_KEY
-        
+
         try:
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
@@ -100,12 +100,12 @@ def result():
             ans = response["choices"][0]["message"]["content"]
             ans = ans.replace('「','')
             ans = ans.replace('」','')
-            
+
         except:
             error_li = ["Error!","Something Happen!","Try Again!"]
             return render_template('index.html', errors = error_li)
 
-        
+
         return render_template('result.html', test = ans, files = file_path_list)
     else:
         img_path = './static/img/keep_img/flask.png'
@@ -181,7 +181,7 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
         # print('max_length:' + str(max_length) + ' height:' + str(new_img.size[1]) + ' width:' + str(new_img.size[0]))
         new_img_size = os.path.getsize(path) / 1000
         # 画質を調整
-        for i in range(100, -1, -5): 
+        for i in range(100, -1, -5):
             # PILならBytesIOに保存できるので、ディスクに保存せずに処理できた。
             buffer = BytesIO()
             new_img.save(buffer, format='JPEG', quality=i)
@@ -191,7 +191,7 @@ def resize_img(path:str, max_width:int, max_height:int) -> bytes:
             elif new_img_size <= Max_size:
                 # print('画質調整終了 ' + str(new_img_size) + 'KB '+ 'quality=' + str(i))
                 return buffer
-                
+
 
 
 # 正直クラスにする必要性感じんけどクラス作る勉強のためにやりました。
@@ -202,7 +202,7 @@ class labels():
     結果として翻訳済みのラベルが返ってくる。
     翻訳処理とAmazon Rekognitionの処理はAPI GatewayとAWS lambdaを経由。
     流れはこうなってる……はず。
-    get_label() -> API Gateway -> AWS lambda -> Amazon Rekognition -> 
+    get_label() -> API Gateway -> AWS lambda -> Amazon Rekognition ->
     AWS lambda -> Amazon Translate -> AWS lambda -> API Gateway -> get_label()
     """
     def __init__(self, img_path:str, threshold:int, urldata:dict) -> None:
