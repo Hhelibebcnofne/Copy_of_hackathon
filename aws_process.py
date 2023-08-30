@@ -97,7 +97,7 @@ def result():
                     {"role": "user", "content": question}, #※1後述
                 ]
             )
-            ans = response["choices"][0]["message"]["content"]
+            ans = response.choices[0]["message"]["content"]
             ans = ans.replace('「','')
             ans = ans.replace('」','')
 
