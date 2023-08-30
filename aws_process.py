@@ -93,14 +93,14 @@ def result():
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "user", "content": ""},
+                    {"role": "user", "content": question},
                 ]
             )
             print(response)
             ans = response["choices"][0]["message"]["content"]
-            print(ans)
-            ans = ans.replace('「','')
-            ans = ans.replace('」','')
+            # print(ans)
+            # ans = ans.replace('「','')
+            # ans = ans.replace('」','')
 
         except:
             error_li = ["Error!","Something Happen!","Try Again!"]
