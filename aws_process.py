@@ -86,15 +86,14 @@ def result():
             question += "ラベルは必要なものだけを使って、SNSに投稿するための面白い投稿文を日本語で考えて!"
 
         print(question)
-
+        print(OPEN_AI_KEY)
         openai.api_key = OPEN_AI_KEY
 
         try:
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    # {"role": "system", "content": "間違った解答をして下さい"}, #※1後述
-                    {"role": "user", "content": question}, #※1後述
+                    {"role": "user", "content": question},
                 ]
             )
             print(response)
