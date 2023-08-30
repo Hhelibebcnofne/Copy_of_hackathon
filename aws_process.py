@@ -13,7 +13,6 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 
 
-# ↓バックエンドだしどうでもいいんだろうけど、APIキーなんで環境変数とかにできるとセキュリティ的に良さげ？
 key = os.getenv("AWS_API_KEY")
 OPEN_AI_KEY = os.getenv("OPEN_AI_KEY")
 
