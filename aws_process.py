@@ -84,8 +84,8 @@ def result():
         else:
             question += "ラベルは必要なものだけを使って、SNSに投稿するための面白い投稿文を日本語で考えて!"
 
-        print(question)
-        print(OPEN_AI_KEY)
+        print("[DEBUG] question:", question)
+        print("[DEBUG] OPEN_AI_KEY:", OPEN_AI_KEY)
         openai.api_key = OPEN_AI_KEY
 
         try:
@@ -95,9 +95,9 @@ def result():
                     {"role": "user", "content": question},
                 ]
             )
-            print(response)
+            print("[DEBUG] response:", response)
             ans = response.choices[0].message.content
-            print(ans)
+            print("[DEBUG] ans:",ans)
             ans = ans.replace('「','')
             ans = ans.replace('」','')
 
