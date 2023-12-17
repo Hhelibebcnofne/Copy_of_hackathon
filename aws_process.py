@@ -88,22 +88,22 @@ def result():
         print("[DEBUG] OPEN_AI_KEY:", OPEN_AI_KEY)
         openai.api_key = OPEN_AI_KEY
 
-        # try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "user", "content": question},
-            ]
-        )
-        print("[DEBUG] response:", response)
-        ans = response.choices[0].message.content
-        print("[DEBUG] ans:",ans)
-        ans = ans.replace('「','')
-        ans = ans.replace('」','')
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "user", "content": question},
+                ]
+            )
+            print("[DEBUG] response:", response)
+            ans = response.choices[0].message.content
+            print("[DEBUG] ans:",ans)
+            ans = ans.replace('「','')
+            ans = ans.replace('」','')
 
-        # except:
-        #     error_li = ["Error!","Something Happen!","Try Again!"]
-        #     return render_template('index.html', errors = error_li)
+        except:
+            error_li = ["Error!","Something Happen!","Try Again!"]
+            return render_template('index.html', errors = error_li)
 
 
         return render_template('result.html', test = ans, files = file_path_list)
